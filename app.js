@@ -5,7 +5,7 @@ const routes = require('./routes');
 const cors = require('cors');
 const http = require('http');
 
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 
 app.use(bodyParser.json());
