@@ -20,6 +20,7 @@ exports.login = async (req, res) => {
         const data = req.body;
         const user = await getUserByUsername(data.username);
         console.log('user:', user);
+        console.log('data:',data)
         
         if (!user) {
             // Si l'utilisateur n'est pas trouvé, renvoyer une réponse d'erreur
@@ -40,9 +41,9 @@ exports.login = async (req, res) => {
             secure: false // Set to true if using HTTPS
         });
         let admin = false;
-        if (user.pseudo == "dieu") {
-            admin = true;
-        }
+        // if (user.pseudo == "dieu") {
+        //     admin = true;
+        // }
         console.log("token:", JWTtoken);
         res.status(200).json({ token: JWTtoken, admin : admin});
     }

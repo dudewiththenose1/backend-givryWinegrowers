@@ -22,13 +22,11 @@ async function createJwt(username) {
 
 
 //Création de mot de passe crypte
-async function hashPassword(password, saltRounds = 10) {
+async function hashPassword(password) {
     try {
-        // Generate a salt
-        const salt = await bcrypt.genSalt(saltRounds)
 
         // Hash password
-        return await bcrypt.hash(password, salt)
+        return await bcrypt.hash(password, 10)
     } catch (error) {
         console.log(error)
     }
@@ -100,18 +98,19 @@ const comparePassword = async (password, hash) => {
     // Return false if error
     return false
 }
-
-async function comparePasswords(user,data) { //user est l'utilisateur de la db et data est l'utilisateur qui essaye de se log
+async function comparePasswords(user, data) {
     try {
-        
-        const test = await bcrypt.hash('test', 10);
-        // Recherchez l'utilisateur dans la base de données par son nom d'utilisateur
-        const isPasswordValid = await bcrypt.compare(data.password, test);
-        console.log(`Password is ${!isPasswordValid ? 'not' : ''} valid!`)
-        return isPasswordValid; // Renvoie true si c'est bon ou false
+        // `user.password` is the hashed password stored in the database
+        // `data.password` is the plain text password provided by the user trying to log in
+
+        const isPasswordValid = await bcrypt.compare(data.password, user.password); // Corrected this line
+
+        console.log(`Password is ${!isPasswordValid ? 'not' : ''} valid!`);
+
+        return isPasswordValid; // Return true if passwords match, false otherwise
     }
     catch (error) {
-        throw new Error(`Error comparing 2 password : ${error.message}`);
+        throw new Error(`Error comparing passwords: ${error.message}`);
     }
 }
 
