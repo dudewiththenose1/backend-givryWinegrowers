@@ -9,7 +9,7 @@ async function fetchData(url) {
 
 }
 
-fetchData("https://resultats.ffbb.com/championnat/classements/b5e6211fec3eb5e62121cc56.html")
+fetchData("https://resultats.ffbb.com/championnat/classements/b5e621202149b5e621222fb9.html")
 
 async function getData(html) {
     const $ = cheerio.load(html);
