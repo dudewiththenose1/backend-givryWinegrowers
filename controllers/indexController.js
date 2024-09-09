@@ -40,10 +40,7 @@ exports.login = async (req, res) => {
             maxAge: 3600000, // Expiry in milliseconds (1 hour)
             secure: false // Set to true if using HTTPS
         });
-        let admin = false;
-        // if (user.pseudo == "dieu") {
-        //     admin = true;
-        // }
+        let admin = true;
         console.log("token:", JWTtoken);
         res.status(200).json({ token: JWTtoken, admin : admin});
     }
