@@ -7,6 +7,7 @@ const imageRoutes = require('./imageRoutes');
 //const blogRoutes = require('./blogRoutes');
 //const commentRoutes = require('./commentRoutes');
 const classementRoutes = require('./classementRoutes');
+const resultatRoutes = require('./resultatRoutes');
 const router = express.Router();
 
 router.post('/register', indexController.register);
@@ -20,5 +21,6 @@ router.use('/image', imageRoutes);
 //router.use('/blog', blogRoutes);
 //router.use('/comment', commentRoutes);
 router.use('/classement', classementRoutes);
+router.use('/resultat', resultatRoutes)
 
 module.exports = router;
