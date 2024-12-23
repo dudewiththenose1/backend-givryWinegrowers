@@ -21,6 +21,5 @@ router.use('/image', imageRoutes);
 //router.use('/blog', blogRoutes);
 //router.use('/comment', commentRoutes);
 router.use('/classement', classementRoutes);
-router.use('/resultat', resultatRoutes)
 
 module.exports = router;

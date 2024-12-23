@@ -75,6 +75,7 @@ router.get('/', async (req, res) => {
         const response = await fetch(url);
         const data = await response.text();
         const rowData = await getClassementData(data);
+        console.log(rowData);
         res.json(rowData);
     } catch (error) {
         res.status(500).json({ message: error.message });
