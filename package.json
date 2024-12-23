@@ -2,7 +2,7 @@
     "name": "winegrowers",
     "version": "0.0.0",
     "scripts": {
-        "start": "node app.js",
+        "start": "npx prisma db push && node prisma/seed.js && node app.js",
         "dev": "nodemon app.js",
         "db": "npx prisma db push && node prisma/seed.js"
     },
