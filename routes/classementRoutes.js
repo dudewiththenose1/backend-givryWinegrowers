@@ -40,7 +40,6 @@ async function getResultatData(html) {
     const $ = cheerio.load(html);
     const tableRows = $('table tr');
     const numberOfRows = tableRows.length;
-    console.log(numberOfRows);
     const rowData = [];
 
     tableRows.each((index, element) => {
@@ -69,15 +68,34 @@ async function getResultatData(html) {
 }
 
 
-router.get('/', async (req, res) => {
+async function fetchPage(url) {
     try {
-        const url = "https://resultats.ffbb.com/championnat/classements/b5e621202149b5e621222fb9.html";
-        const response = await fetch(url);
-        const data = await response.text();
-        const rowData = await getClassementData(data);
-        console.log(rowData);
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+                'Accept-Language': 'en-US,en;q=0.9',
+            },
+        });
+        return await response.text();
+    } catch (error) {
+        throw new Error(`Failed to fetch page: ${error.message}`);
+    }
+}
+
+router.get('/', async (req, res) => {
+    const url = 'https://resultats.ffbb.com/championnat/classements/b5e621202149b5e621222fb9.html';
+
+    try {
+        console.log('Starting scraping process...');
+        const html = await fetchPage(url);
+        console.log('HTML fetched successfully.');
+
+        const rowData = await getClassementData(html);
+        console.log('Scraping completed:', rowData);
+
         res.json(rowData);
     } catch (error) {
+        console.error('Error during scraping:', error.message);
         res.status(500).json({ message: error.message });
     }
 });
@@ -85,10 +103,20 @@ router.get('/', async (req, res) => {
 router.get('/resultat', async (req, res) => {
     try {
         const url = "https://resultats.ffbb.com/championnat/equipe/division/b5e621202149b5e621222fb9b5e6211d5f20.html";
-        const response = await fetch(url);
+        const response = await fetchPage(url);
         const data = await response.text();
         const rowData = await getResultatData(data);
         res.json(rowData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.get('/test', async (req, res) => {
+    try {
+        const response = await fetch('https://resultats.ffbb.com');
+        const data = await response.text();
+        res.status(200).send(data);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
