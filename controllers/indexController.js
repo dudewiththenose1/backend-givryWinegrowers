@@ -6,7 +6,6 @@ const { createUser, getUserByUsername, comparePasswords, createJwt } = require('
 exports.register = async (req, res) => {
     try {
         const data = req.body;
-        console.log('log:', data);
         const userData = await createUser(data);
         res.json(userData);
     }

@@ -1,4 +1,6 @@
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 
 const { PrismaClient } = require('@prisma/client');
 
@@ -64,25 +66,40 @@ async function getAllJoueurs() {
 async function deleteJoueur(data) {
     try {
         // On vérifie que l'utilisateur existe bien
-        const already = await getJoueurById(data);
-        console.log('already:', already);
+        const already = await prisma.joueur.findUnique({
+            where: {
+                id_joueur: parseInt(data)
+            },
+            include: {
+                imagejoueur: true
+            }
+        });
 
         if (already) {
-            // Suppression des images associées au joueur avant la suppression du joueur
+            // Suppression des images associées au joueur
+            for (const image of already.imagejoueur) {
+                const imagePath = path.join('public/images', image.nom);
+                fs.unlink(imagePath, (err) => {
+                    if (err) {
+                        console.error(`Error deleting image file: ${err.message}`);
+                    }
+                });
+            }
+
+            // Suppression des enregistrements d'images dans la base de données
             await prisma.imageJoueur.deleteMany({
                 where: { id_joueur: already.id_joueur }
             });
-            console.log('data:', already.id_joueur);
+
             const deletedJoueur = await prisma.joueur.delete({
                 where: { id_joueur: already.id_joueur }
             });
-            console.log('deletedJoueur:', deletedJoueur);
+
             return deletedJoueur;
         } else {
             throw new Error(`L'utilisateur n'existe pas`);
         }
     } catch (error) {
-        console.error('Error deleting user:', error.message); // Affichage du message d'erreur
         throw new Error(`Error deleting user: ${error.message}`); // Rejeter l'erreur avec le message
     }
 }

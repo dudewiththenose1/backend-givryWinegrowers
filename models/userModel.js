@@ -103,7 +103,7 @@ async function comparePasswords(user, data) {
         // `user.password` is the hashed password stored in the database
         // `data.password` is the plain text password provided by the user trying to log in
 
-        const isPasswordValid = await bcrypt.compare(data.password, user.password); // Corrected this line
+        const isPasswordValid = await bcrypt.compare(data.password, user.password); 
 
         console.log(`Password is ${!isPasswordValid ? 'not' : ''} valid!`);
 
@@ -166,5 +166,5 @@ module.exports = {
     comparePasswords,
     deleteUser,
     modifyUser,
-    createJwt
+    createJwt,hashPassword
 };
