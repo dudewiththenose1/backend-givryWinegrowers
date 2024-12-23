@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch');
 const cheerio = require('cheerio');
+const axios = require('axios');
 
 
 async function getClassementData(html) {
@@ -70,13 +70,13 @@ async function getResultatData(html) {
 
 async function fetchPage(url) {
     try {
-        const response = await fetch(url, {
+        const response = await axios.get(url, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
                 'Accept-Language': 'en-US,en;q=0.9',
             },
         });
-        return await response.text();
+        return response.data;
     } catch (error) {
         throw new Error(`Failed to fetch page: ${error.message}`);
     }
