@@ -68,29 +68,29 @@ async function getResultatData(html) {
 }
 
 
-async function fetchPage(url) {
+async function fetchPage(url,proxyUrl) {
     try {
-        const response = await axios.get(url, {
+        const response = await axios.get(proxyUrl, {
+            params: { q: url }, // 'q' est le paramètre utilisé par CroxyProxy pour passer l'URL cible
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Referer': 'https://www.google.com/',
-                'Connection': 'keep-alive',
             },
         });
-        return response.data;
+
+        console.log(response.data);
     } catch (error) {
-        throw new Error(`Failed to fetch page: ${error.message}`);
+        console.error('Error fetching via CroxyProxy:', error.message);
     }
 }
 
 router.get('/', async (req, res) => {
     const url = 'https://resultats.ffbb.com/championnat/classements/b5e621202149b5e621222fb9.html';
+    const proxyUrl = 'https://185.16.39.213/__cpi.php?s=UkQ2YXlSaWJuc3ZoeGR2dG04WW9LdWxIbnFwMGx4VjdCaFFFTHdhbUg4dFZoMys3ZHoweFpub0xFRUw5dWNIWDRkUXUwdWxQZlJqeXBnWnp0OVh5RXM1NUgwT3FmWHhNR0FPMTJCOXRkbTg9&r=aHR0cHM6Ly8xODUuMTYuMzkuMjEzL2NoYW1waW9ubmF0L2NsYXNzZW1lbnRzL2I1ZTYyMTIwMjE0OWI1ZTYyMTIyMmZiOS5odG1sP19fY3BvPWFIUjBjSE02THk5eVpYTjFiSFJoZEhNdVptWmlZaTVqYjIw&__cpo=1';
+
 
     try {
         console.log('Starting scraping process...');
-        const html = await fetchPage(url);
+        const html = await fetchPage(url, proxyUrl);
         console.log('HTML fetched successfully.');
 
         const rowData = await getClassementData(html);
@@ -106,7 +106,9 @@ router.get('/', async (req, res) => {
 router.get('/resultat', async (req, res) => {
     try {
         const url = "https://resultats.ffbb.com/championnat/equipe/division/b5e621202149b5e621222fb9b5e6211d5f20.html";
-        const response = await fetchPage(url);
+        const proxyUrl = "https://51.158.204.66/__cpi.php?s=UkQ2YXlSaWJuc3ZoeGR2dG04WW9LclE5N0pqSGFlb1k5aWtnWXp1R2ZoVno5SFBjQStCNi9GUVVRdEhBOGd6SVlhdFZFblpHeksxZFc0dFlkaEpZNGNSVkJhVDd5VzFWVXFnSTZiN0NsQms9&r=aHR0cHM6Ly81MS4xNTguMjA0LjY2L2NoYW1waW9ubmF0L2VxdWlwZS9kaXZpc2lvbi9iNWU2MjEyMDIxNDliNWU2MjEyMjJmYjliNWU2MjExZDVmMjAuaHRtbD9fX2Nwbz1hSFIwY0hNNkx5OXlaWE4xYkhSaGRITXVabVppWWk1amIyMA%3D%3D&__cpo=1";
+
+        const response = await fetchPage(url,proxyUrl);
         const data = await response.text();
         const rowData = await getResultatData(data);
         res.json(rowData);
