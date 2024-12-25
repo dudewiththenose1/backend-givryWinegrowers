@@ -124,7 +124,10 @@ router.get('/', async (req, res) => {
         const html = await fetchPage(config);
         console.log('HTML fetched successfully.');
 
-        const rowData = await getClassementData(html);
+
+        const text = await html.text();
+
+        const rowData = await getClassementData(text);
         console.log('Scraping completed:', rowData);
 
         res.json(rowData);
