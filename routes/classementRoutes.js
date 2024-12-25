@@ -3,6 +3,23 @@ const router = express.Router();
 const cheerio = require('cheerio');
 const axios = require('axios');
 
+// Liste des proxies
+const proxies = [
+    '154.213.193.195:3128',
+    '154.213.203.64:3128',
+    '156.253.178.249:3128',
+    '154.213.198.169:3128',
+    '156.253.176.193:3128',
+    '156.253.178.210:3128',
+    '45.202.76.120:3128',
+    '154.213.194.89:3128',
+    '156.253.179.15:3128',
+    '156.253.176.124:3128',
+    '154.213.204.82:3128',
+];
+
+
+
 
 async function getClassementData(html) {
     const $ = cheerio.load(html);
@@ -68,28 +85,43 @@ async function getResultatData(html) {
 }
 
 
-async function fetchPage(url,proxyUrl) {
+async function fetchPage(url) {
     try {
-        const response = await axios.get(proxyUrl, {
-            params: { q: url }, // 'q' est le paramètre utilisé par CroxyProxy pour passer l'URL cible
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-            },
-        });
-
-        console.log(response.data);
-        return response.data;
+        axios.request(config)
+            .then((response) => {
+                if (response.data.data.browserHtml) {
+                    console.log(response.data.data.browserHtml);
+                    return response.data.data.browserHtml;
+                } else {
+                    console.log(Buffer.from(response.data.data.httpResponseBody, 'base64').toString());
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     } catch (error) {
         console.error('Error fetching via CroxyProxy:', error.message);
     }
 }
 
 router.get('/', async (req, res) => {
-    const url = 'https://resultats.ffbb.com/championnat/classements/b5e621202149b5e621222fb9.html';
-    const proxyUrl = 'https://51.159.195.51/__cpi.php?s=UkQ2YXlSaWJuc3ZoeGR2dG04WW9LbTJXbDdOVzlCNUk0RzFRMytOcVZtcHphRmpuRkpteTNSRVNnRVpqcjNma1RsZzh4azdsdHZZbk9IdTMrbjZGTm9FV0lINEhGYXNVSG9pdFkvMnlLYUE9&r=aHR0cHM6Ly81MS4xNTkuMTk1LjUxL2NoYW1waW9ubmF0L2NsYXNzZW1lbnRzL2I1ZTYyMTIwMjE0OWI1ZTYyMTIyMmZiOS5odG1sP19fY3BvPWFIUjBjSE02THk5eVpYTjFiSFJoZEhNdVptWmlZaTVqYjIw&__cpo=1';
     try {
+        let data = JSON.stringify({
+            "url": "https://resultats.ffbb.com/championnat/classements/b5e621202149b5e621222fb9.html",
+            "httpResponseBody": true
+        });
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'https://api.proxyscrape.com/v3/accounts/freebies/scraperapi/request',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Api-Key': '03503d14-8042-4460-845c-d3e1d3889f27'
+            },
+            data: data
+        };
         console.log('Starting scraping process...');
-        const html = await fetchPage(url, proxyUrl);
+        const html = await fetchPage(config);
         console.log('HTML fetched successfully.');
 
         const rowData = await getClassementData(html);
