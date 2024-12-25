@@ -78,6 +78,7 @@ async function fetchPage(url,proxyUrl) {
         });
 
         console.log(response.data);
+        return response.data;
     } catch (error) {
         console.error('Error fetching via CroxyProxy:', error.message);
     }
@@ -85,9 +86,7 @@ async function fetchPage(url,proxyUrl) {
 
 router.get('/', async (req, res) => {
     const url = 'https://resultats.ffbb.com/championnat/classements/b5e621202149b5e621222fb9.html';
-    const proxyUrl = 'https://185.16.39.213/__cpi.php?s=UkQ2YXlSaWJuc3ZoeGR2dG04WW9LdWxIbnFwMGx4VjdCaFFFTHdhbUg4dFZoMys3ZHoweFpub0xFRUw5dWNIWDRkUXUwdWxQZlJqeXBnWnp0OVh5RXM1NUgwT3FmWHhNR0FPMTJCOXRkbTg9&r=aHR0cHM6Ly8xODUuMTYuMzkuMjEzL2NoYW1waW9ubmF0L2NsYXNzZW1lbnRzL2I1ZTYyMTIwMjE0OWI1ZTYyMTIyMmZiOS5odG1sP19fY3BvPWFIUjBjSE02THk5eVpYTjFiSFJoZEhNdVptWmlZaTVqYjIw&__cpo=1';
-
-
+    const proxyUrl = 'https://51.159.195.51/__cpi.php?s=UkQ2YXlSaWJuc3ZoeGR2dG04WW9LbTJXbDdOVzlCNUk0RzFRMytOcVZtcHphRmpuRkpteTNSRVNnRVpqcjNma1RsZzh4azdsdHZZbk9IdTMrbjZGTm9FV0lINEhGYXNVSG9pdFkvMnlLYUE9&r=aHR0cHM6Ly81MS4xNTkuMTk1LjUxL2NoYW1waW9ubmF0L2NsYXNzZW1lbnRzL2I1ZTYyMTIwMjE0OWI1ZTYyMTIyMmZiOS5odG1sP19fY3BvPWFIUjBjSE02THk5eVpYTjFiSFJoZEhNdVptWmlZaTVqYjIw&__cpo=1';
     try {
         console.log('Starting scraping process...');
         const html = await fetchPage(url, proxyUrl);
