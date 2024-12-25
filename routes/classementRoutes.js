@@ -90,8 +90,8 @@ async function fetchPage(config) {
         axios.request(config)
             .then((response) => {
                 if (response.data.data.browserHtml) {
-                    console.log(response.data);
-                    return response.data;
+                    console.log(response);
+                    return response;
                 } else {
                     console.log(Buffer.from(response.data.data.httpResponseBody, 'base64').toString());
                 }
@@ -121,11 +121,11 @@ router.get('/', async (req, res) => {
             data: data
         };
         console.log('Starting scraping process...');
-        const html = await fetchPage(config);
+        const response = await fetchPage(config);
         console.log('HTML fetched successfully.');
 
 
-        const text = await html.text();
+        const text = response.data;
 
         const rowData = await getClassementData(text);
         console.log('Scraping completed:', rowData);
