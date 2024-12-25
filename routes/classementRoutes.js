@@ -87,20 +87,26 @@ async function getResultatData(html) {
 
 async function fetchPage(config) {
     try {
-        axios.request(config)
-            .then((response) => {
-                if (response.data.data.browserHtml) {
-                    console.log(response);
-                    return response;
-                } else {
-                    console.log(Buffer.from(response.data.data.httpResponseBody, 'base64').toString());
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        const response = await axios.request(config);
+        if (response.data && response.data.data) {
+            if (response.data.data.browserHtml) {
+                console.log('Browser HTML fetched successfully.');
+                return response.data.data.browserHtml;
+            } else if (response.data.data.httpResponseBody) {
+                const decodedBody = Buffer.from(response.data.data.httpResponseBody, 'base64').toString();
+                console.log('HTTP Response Body fetched successfully.');
+                return decodedBody;
+            } else {
+                console.log('Unexpected response structure:', response.data);
+                return null;
+            }
+        } else {
+            console.log('Invalid response structure:', response);
+            return null;
+        }
     } catch (error) {
-        console.error('Error fetching via CroxyProxy:', error.message);
+        console.error('Error in fetchPage:', error.message);
+        throw error;
     }
 }
 
@@ -121,13 +127,15 @@ router.get('/', async (req, res) => {
             data: data
         };
         console.log('Starting scraping process...');
-        const response = await fetchPage(config);
+        const html = await fetchPage(config);
+
+        if (!html) {
+            throw new Error('Failed to fetch HTML content.');
+        }
+
         console.log('HTML fetched successfully.');
 
-
-        const text = response.data;
-
-        const rowData = await getClassementData(text);
+        const rowData = await getClassementData(html);
         console.log('Scraping completed:', rowData);
 
         res.json(rowData);
@@ -139,26 +147,39 @@ router.get('/', async (req, res) => {
 
 router.get('/resultat', async (req, res) => {
     try {
-        const url = "https://resultats.ffbb.com/championnat/equipe/division/b5e621202149b5e621222fb9b5e6211d5f20.html";
-        const proxyUrl = "https://51.158.204.66/__cpi.php?s=UkQ2YXlSaWJuc3ZoeGR2dG04WW9LclE5N0pqSGFlb1k5aWtnWXp1R2ZoVno5SFBjQStCNi9GUVVRdEhBOGd6SVlhdFZFblpHeksxZFc0dFlkaEpZNGNSVkJhVDd5VzFWVXFnSTZiN0NsQms9&r=aHR0cHM6Ly81MS4xNTguMjA0LjY2L2NoYW1waW9ubmF0L2VxdWlwZS9kaXZpc2lvbi9iNWU2MjEyMDIxNDliNWU2MjEyMjJmYjliNWU2MjExZDVmMjAuaHRtbD9fX2Nwbz1hSFIwY0hNNkx5OXlaWE4xYkhSaGRITXVabVppWWk1amIyMA%3D%3D&__cpo=1";
+        const data = JSON.stringify({
+            "url": "https://resultats.ffbb.com/championnat/equipe/division/b5e621202149b5e621222fb9b5e6211d5f20.html",
+            "httpResponseBody": true
+        });
 
-        const response = await fetchPage(url,proxyUrl);
-        const data = await response.text();
-        const rowData = await getResultatData(data);
+        const config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'https://api.proxyscrape.com/v3/accounts/freebies/scraperapi/request',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Api-Key': '03503d14-8042-4460-845c-d3e1d3889f27'
+            },
+            data: data
+        };
+        console.log('Starting scraping process for results...');
+        const html = await fetchPage(config);
+
+        if (!html) {
+            throw new Error('Failed to fetch HTML content for results.');
+        }
+
+        console.log('HTML fetched successfully for results.');
+
+        const rowData = await getResultatData(html);
+        console.log('Scraping completed for results:', rowData);
+
         res.json(rowData);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-router.get('/test', async (req, res) => {
-    try {
-        const response = await fetch('https://resultats.ffbb.com');
-        const data = await response.text();
-        res.status(200).send(data);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+
 
 module.exports = router;
