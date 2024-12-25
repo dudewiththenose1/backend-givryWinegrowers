@@ -85,7 +85,7 @@ async function getResultatData(html) {
 }
 
 
-async function fetchPage(url) {
+async function fetchPage(config) {
     try {
         axios.request(config)
             .then((response) => {
