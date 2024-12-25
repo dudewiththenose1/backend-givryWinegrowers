@@ -90,8 +90,8 @@ async function fetchPage(config) {
         axios.request(config)
             .then((response) => {
                 if (response.data.data.browserHtml) {
-                    console.log(response.data.data.browserHtml);
-                    return response.data.data.browserHtml;
+                    console.log(response.data);
+                    return response.data;
                 } else {
                     console.log(Buffer.from(response.data.data.httpResponseBody, 'base64').toString());
                 }
