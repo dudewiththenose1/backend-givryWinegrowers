@@ -126,17 +126,12 @@ router.get('/', async (req, res) => {
             },
             data: data
         };
-        console.log('Starting scraping process...');
         const html = await fetchPage(config);
 
         if (!html) {
             throw new Error('Failed to fetch HTML content.');
         }
-
-        console.log('HTML fetched successfully.');
-
         const rowData = await getClassementData(html);
-        console.log('Scraping completed:', rowData);
 
         res.json(rowData);
     } catch (error) {
@@ -162,17 +157,13 @@ router.get('/resultat', async (req, res) => {
             },
             data: data
         };
-        console.log('Starting scraping process for results...');
         const html = await fetchPage(config);
 
         if (!html) {
             throw new Error('Failed to fetch HTML content for results.');
         }
 
-        console.log('HTML fetched successfully for results.');
-
         const rowData = await getResultatData(html);
-        console.log('Scraping completed for results:', rowData);
 
         res.json(rowData);
     } catch (error) {
