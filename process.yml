@@ -1,0 +1,18 @@
+apps:
+  - name: worker-0
+    script: ./app.js
+    instances: 1
+    exec_mode: fork
+    env:
+      NODE_ENV: production
+      PORT: 3500
+      DATABASE_URL: "postgresql://postgres:winegrowers@localhost:5433/WINEGROWERS?schema=public"
+
+  - name: worker-1
+    script: ./app.js
+    instances: 1
+    exec_mode: fork
+    env:
+      NODE_ENV: production
+      PORT: 3501
+      DATABASE_URL: "postgresql://postgres:winegrowers@localhost:5433/WINEGROWERS?schema=public"
